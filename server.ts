@@ -16,8 +16,13 @@ const __dirname = path.dirname(__filename);
 
 let db: Database.Database;
 try {
-  db = new Database(path.join(__dirname, "tickets.db"));
-  console.log("Database connected successfully");
+  // Vercel filesystem is read-only, use /tmp for the database if on Vercel
+  const dbPath = process.env.VERCEL 
+    ? path.join("/tmp", "tickets.db") 
+    : path.join(__dirname, "tickets.db");
+    
+  db = new Database(dbPath);
+  console.log(`Database connected at ${dbPath}`);
 } catch (err) {
   console.error("Failed to connect to database:", err);
   // Fallback to memory database if file fails
@@ -461,4 +466,8 @@ async function startServer() {
   });
 }
 
-startServer();
+if (process.env.NODE_ENV !== "production") {
+  startServer();
+}
+
+export default app;
