@@ -33,102 +33,106 @@ try {
 dotenv.config();
 
 // Initialize Database
-db.exec(`
-  CREATE TABLE IF NOT EXISTS events (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    title TEXT,
-    date TEXT,
-    description TEXT,
-    venue TEXT,
-    hero_image TEXT,
-    venue_map TEXT,
-    host_name TEXT,
-    host_description TEXT,
-    host_image TEXT
-  );
+try {
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS events (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      title TEXT,
+      date TEXT,
+      description TEXT,
+      venue TEXT,
+      hero_image TEXT,
+      venue_map TEXT,
+      host_name TEXT,
+      host_description TEXT,
+      host_image TEXT
+    );
 
-  CREATE TABLE IF NOT EXISTS ticket_types (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT,
-    price REAL,
-    quantity INTEGER,
-    sold INTEGER DEFAULT 0,
-    description TEXT
-  );
+    CREATE TABLE IF NOT EXISTS ticket_types (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT,
+      price REAL,
+      quantity INTEGER,
+      sold INTEGER DEFAULT 0,
+      description TEXT
+    );
 
-  CREATE TABLE IF NOT EXISTS transactions (
-    id TEXT PRIMARY KEY,
-    email TEXT,
-    amount REAL,
-    status TEXT,
-    reference TEXT UNIQUE,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-  );
+    CREATE TABLE IF NOT EXISTS transactions (
+      id TEXT PRIMARY KEY,
+      email TEXT,
+      amount REAL,
+      status TEXT,
+      reference TEXT UNIQUE,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
 
-  CREATE TABLE IF NOT EXISTS tickets (
-    id TEXT PRIMARY KEY,
-    transaction_id TEXT,
-    ticket_type_id INTEGER,
-    holder_name TEXT,
-    email TEXT,
-    qr_code TEXT,
-    is_used INTEGER DEFAULT 0,
-    used_at DATETIME,
-    FOREIGN KEY(transaction_id) REFERENCES transactions(id),
-    FOREIGN KEY(ticket_type_id) REFERENCES ticket_types(id)
-  );
+    CREATE TABLE IF NOT EXISTS tickets (
+      id TEXT PRIMARY KEY,
+      transaction_id TEXT,
+      ticket_type_id INTEGER,
+      holder_name TEXT,
+      email TEXT,
+      qr_code TEXT,
+      is_used INTEGER DEFAULT 0,
+      used_at DATETIME,
+      FOREIGN KEY(transaction_id) REFERENCES transactions(id),
+      FOREIGN KEY(ticket_type_id) REFERENCES ticket_types(id)
+    );
 
-  CREATE TABLE IF NOT EXISTS gallery (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    image_url TEXT,
-    caption TEXT,
-    category TEXT -- 'guest', 'performance', 'sponsor'
-  );
-`);
+    CREATE TABLE IF NOT EXISTS gallery (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      image_url TEXT,
+      caption TEXT,
+      category TEXT -- 'guest', 'performance', 'sponsor'
+    );
+  `);
 
-// Seed initial data if empty
-const eventCount = db.prepare("SELECT COUNT(*) as count FROM events").get() as { count: number };
-if (eventCount.count === 0) {
-  db.prepare(`
-    INSERT INTO events (title, date, description, venue, hero_image, host_name, host_description, host_image)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-  `).run(
-    "Comedy Show 2026",
-    "2026-06-15T19:00:00",
-    "Get ready for the biggest comedy event of the year! Featuring top comedians from across the globe.",
-    "Lagos City Hall",
-    "https://picsum.photos/seed/comedy/1200/600",
-    "MC Knight Wizz",
-    "MC Knight Wizz is a renowned entertainer and host, known for bringing high energy and unforgettable moments to every stage.",
-    "https://picsum.photos/seed/host/400/400"
-  );
+  // Seed initial data if empty
+  const eventCount = db.prepare("SELECT COUNT(*) as count FROM events").get() as { count: number };
+  if (eventCount.count === 0) {
+    db.prepare(`
+      INSERT INTO events (title, date, description, venue, hero_image, host_name, host_description, host_image)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    `).run(
+      "Comedy Show 2026",
+      "2026-06-15T19:00:00",
+      "Get ready for the biggest comedy event of the year! Featuring top comedians from across the globe.",
+      "Lagos City Hall",
+      "https://picsum.photos/seed/comedy/1200/600",
+      "MC Knight Wizz",
+      "MC Knight Wizz is a renowned entertainer and host, known for bringing high energy and unforgettable moments to every stage.",
+      "https://picsum.photos/seed/host/400/400"
+    );
 
-  db.prepare(`
-    INSERT INTO ticket_types (name, price, quantity, description)
-    VALUES (?, ?, ?, ?), (?, ?, ?, ?), (?, ?, ?, ?)
-  `).run(
-    "Regular", 5000, 500, "Standard entry to the event.",
-    "VIP", 15000, 100, "Premium seating and complimentary drink.",
-    "VVIP", 50000, 20, "Front row seating, backstage access, and full hospitality."
-  );
+    db.prepare(`
+      INSERT INTO ticket_types (name, price, quantity, description)
+      VALUES (?, ?, ?, ?), (?, ?, ?, ?), (?, ?, ?, ?)
+    `).run(
+      "Regular", 5000, 500, "Standard entry to the event.",
+      "VIP", 15000, 100, "Premium seating and complimentary drink.",
+      "VVIP", 50000, 20, "Front row seating, backstage access, and full hospitality."
+    );
 
-  db.prepare(`
-    INSERT INTO gallery (image_url, caption, category)
-    VALUES (?, ?, ?), (?, ?, ?), (?, ?, ?)
-  `).run(
-    "https://picsum.photos/seed/guest1/400/400", "Guest of Honor: John Smith", "guest",
-    "https://picsum.photos/seed/perf1/400/400", "Opening Act: The Laugh Factory", "performance",
-    "https://picsum.photos/seed/sponsor1/400/400", "Official Partner: TechCorp", "sponsor"
-  );
-} else {
-  // Ensure columns exist for existing databases
-  try { db.prepare("ALTER TABLE events ADD COLUMN host_name TEXT").run(); } catch(e) {}
-  try { db.prepare("ALTER TABLE events ADD COLUMN host_description TEXT").run(); } catch(e) {}
-  try { db.prepare("ALTER TABLE events ADD COLUMN host_image TEXT").run(); } catch(e) {}
-  
-  // Update existing host name if it's the default
-  db.prepare("UPDATE events SET host_name = ? WHERE host_name = 'Basketmouth' OR host_name IS NULL").run("MC Knight Wizz");
-  db.prepare("UPDATE events SET host_description = ? WHERE host_description LIKE 'Bright Okpocha%' OR host_description IS NULL").run("MC Knight Wizz is a renowned entertainer and host, known for bringing high energy and unforgettable moments to every stage.");
+    db.prepare(`
+      INSERT INTO gallery (image_url, caption, category)
+      VALUES (?, ?, ?), (?, ?, ?), (?, ?, ?)
+    `).run(
+      "https://picsum.photos/seed/guest1/400/400", "Guest of Honor: John Smith", "guest",
+      "https://picsum.photos/seed/perf1/400/400", "Opening Act: The Laugh Factory", "performance",
+      "https://picsum.photos/seed/sponsor1/400/400", "Official Partner: TechCorp", "sponsor"
+    );
+  } else {
+    // Ensure columns exist for existing databases
+    try { db.prepare("ALTER TABLE events ADD COLUMN host_name TEXT").run(); } catch(e) {}
+    try { db.prepare("ALTER TABLE events ADD COLUMN host_description TEXT").run(); } catch(e) {}
+    try { db.prepare("ALTER TABLE events ADD COLUMN host_image TEXT").run(); } catch(e) {}
+    
+    // Update existing host name if it's the default
+    db.prepare("UPDATE events SET host_name = ? WHERE host_name = 'Basketmouth' OR host_name IS NULL").run("MC Knight Wizz");
+    db.prepare("UPDATE events SET host_description = ? WHERE host_description LIKE 'Bright Okpocha%' OR host_description IS NULL").run("MC Knight Wizz is a renowned entertainer and host, known for bringing high energy and unforgettable moments to every stage.");
+  }
+} catch (err) {
+  console.error("Database initialization error:", err);
 }
 
 const app = express();
@@ -212,12 +216,24 @@ const authenticateAdmin = (req: any, res: any, next: any) => {
 // --- Public API Routes ---
 
 app.get("/api/health", (req, res) => {
-  res.json({ status: "ok", time: new Date().toISOString() });
+  res.json({ 
+    status: "ok", 
+    time: new Date().toISOString(),
+    db_connected: !!db,
+    env: process.env.NODE_ENV
+  });
 });
 
 app.get("/api/event", (req, res) => {
-  const event = db.prepare("SELECT * FROM events LIMIT 1").get();
-  res.json(event);
+  try {
+    if (!db) throw new Error("Database not initialized");
+    const event = db.prepare("SELECT * FROM events LIMIT 1").get();
+    if (!event) throw new Error("No event found in database");
+    res.json(event);
+  } catch (err: any) {
+    console.error("API Error (/api/event):", err);
+    res.status(500).json({ error: err.message || "Internal Server Error" });
+  }
 });
 
 app.get("/api/ticket-types", (req, res) => {
@@ -228,6 +244,15 @@ app.get("/api/ticket-types", (req, res) => {
 app.get("/api/gallery", (req, res) => {
   const gallery = db.prepare("SELECT * FROM gallery ORDER BY id DESC").all();
   res.json(gallery);
+});
+
+// Global Error Handler
+app.use((err: any, req: any, res: any, next: any) => {
+  console.error("Unhandled Error:", err);
+  res.status(500).json({ 
+    error: "Internal Server Error", 
+    message: process.env.NODE_ENV === 'production' ? "An unexpected error occurred" : err.message 
+  });
 });
 
 app.post("/api/initialize-payment", async (req, res) => {
