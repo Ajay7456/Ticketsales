@@ -84,29 +84,34 @@ const Navbar = ({ onAdminClick, onScannerClick, theme, onThemeToggle }: {
 );
 
 const Hero = ({ event }: { event: EventDetails }) => (
-  <section className="relative h-[70vh] flex items-center justify-center overflow-hidden">
+  <section className="relative h-[85vh] flex items-center justify-center overflow-hidden">
     <div className="absolute inset-0 z-0">
       <img 
         src={event.hero_image} 
         alt={event.title}
-        className="w-full h-full object-cover opacity-50 scale-105"
+        className="w-full h-full object-cover opacity-60 scale-105"
         referrerPolicy="no-referrer"
       />
-      <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-t from-white dark:from-black via-white/40 dark:via-black/40 to-transparent" />
+      <div className="absolute inset-0 bg-radial-gradient from-transparent to-white/20 dark:to-black/20" />
     </div>
-    <div className="relative z-10 text-center px-4 max-w-4xl">
+    <div className="relative z-10 text-center px-4 max-w-5xl">
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
+        transition={{ duration: 0.8, ease: "easeOut" }}
       >
-        <span className="inline-block px-3 py-1 bg-emerald-500/20 text-emerald-400 text-xs font-bold tracking-widest uppercase rounded-full mb-4 border border-emerald-500/30">
-          Live Event 2026
+        <span className="inline-block px-4 py-1.5 bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-xs font-black tracking-[0.2em] uppercase rounded-full mb-8 border border-emerald-500/30 backdrop-blur-sm">
+          Exclusive Live Event 2026
         </span>
-        <h1 className="text-5xl md:text-7xl font-black text-white mb-6 tracking-tighter">
+        <h1 className="text-6xl md:text-8xl lg:text-9xl font-black text-zinc-900 dark:text-white mb-8 tracking-tighter leading-[0.9]">
           {event.title}
         </h1>
-        <div className="flex flex-wrap items-center justify-center gap-6 text-white/80 font-medium">
+        <p className="text-zinc-600 dark:text-white/60 text-lg md:text-xl font-medium mb-10 max-w-2xl mx-auto leading-relaxed">
+          Hosted by the one and only <span className="text-zinc-900 dark:text-white font-bold">{event.host_name}</span>. 
+          Experience a night of pure entertainment and laughter.
+        </p>
+        <div className="flex flex-wrap items-center justify-center gap-8 text-zinc-700 dark:text-white/80 font-bold">
           <div className="flex items-center gap-2">
             <Calendar className="w-5 h-5 text-emerald-500" />
             <span>{formatDate(event.date)}</span>
@@ -424,6 +429,47 @@ const SuccessModal = ({ ticketId, onClose }: { ticketId: string, onClose: () => 
   );
 };
 
+const ValidationSection = ({ onScannerClick }: { onScannerClick: () => void }) => (
+  <section id="validation" className="py-24 bg-emerald-500/5 border-y border-emerald-500/10 transition-colors duration-300">
+    <div className="max-w-7xl mx-auto px-4">
+      <div className="flex flex-col md:flex-row items-center justify-between gap-12">
+        <div className="max-w-xl">
+          <div className="inline-block px-3 py-1 bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-[10px] font-black tracking-widest uppercase rounded-full mb-4 border border-emerald-500/30">
+            Staff Portal
+          </div>
+          <h2 className="text-4xl font-black text-zinc-900 dark:text-white mb-6 tracking-tight">Validation Center</h2>
+          <p className="text-zinc-600 dark:text-white/60 text-lg leading-relaxed mb-8">
+            Are you a staff member or event organizer? Use our dedicated validation tools to check in attendees quickly and securely. Supports manual entry and camera scanning.
+          </p>
+          <div className="flex flex-wrap gap-4">
+            <button 
+              onClick={onScannerClick}
+              className="px-8 py-4 bg-emerald-500 text-black font-black rounded-2xl hover:bg-emerald-400 transition-all flex items-center gap-3 shadow-lg shadow-emerald-500/20"
+            >
+              <ScanLine className="w-6 h-6" />
+              Open Scanner
+            </button>
+            <div className="flex items-center gap-3 text-zinc-400 dark:text-white/40 text-sm font-bold uppercase tracking-widest">
+              <ShieldCheck className="w-5 h-5" />
+              Authorized Personnel Only
+            </div>
+          </div>
+        </div>
+        <div className="relative w-full max-w-sm aspect-square bg-white dark:bg-zinc-900 rounded-[3rem] border border-zinc-200 dark:border-white/10 p-8 flex flex-col items-center justify-center text-center shadow-2xl transition-colors">
+          <div className="absolute -top-6 -right-6 w-24 h-24 bg-emerald-500 rounded-3xl flex items-center justify-center rotate-12 shadow-xl">
+            <Ticket className="text-black w-12 h-12" />
+          </div>
+          <div className="w-20 h-20 bg-emerald-500/10 rounded-full flex items-center justify-center mb-6">
+            <Camera className="text-emerald-500 w-10 h-10" />
+          </div>
+          <h3 className="text-xl font-bold text-zinc-900 dark:text-white mb-2">Fast Check-in</h3>
+          <p className="text-zinc-500 dark:text-white/40 text-sm">Scan QR codes on attendee tickets for instant validation.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+);
+
 const AdminDashboard = ({ onClose, onUpdate, theme }: { onClose: () => void, onUpdate?: () => void, theme: 'light' | 'dark' }) => {
   const [password, setPassword] = useState('');
   const [token, setToken] = useState(localStorage.getItem('admin_token') || '');
@@ -650,7 +696,7 @@ const AdminDashboard = ({ onClose, onUpdate, theme }: { onClose: () => void, onU
           <div>
             <h1 className="text-3xl font-black text-zinc-900 dark:text-white">Admin Dashboard</h1>
             <div className="flex gap-4 mt-4">
-              {(['stats', 'tickets', 'gallery', 'settings'] as const).map(tab => (
+              {(['stats', 'tickets', 'validation', 'gallery', 'settings'] as const).map(tab => (
                 <button
                   key={tab}
                   onClick={() => setActiveTab(tab)}
@@ -815,6 +861,36 @@ const AdminDashboard = ({ onClose, onUpdate, theme }: { onClose: () => void, onU
                   ))}
                 </tbody>
               </table>
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'validation' && (
+          <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-white/5 rounded-3xl p-12 text-center transition-colors">
+            <div className="max-w-md mx-auto">
+              <div className="w-24 h-24 bg-emerald-500 rounded-3xl flex items-center justify-center mx-auto mb-8 rotate-6 shadow-xl shadow-emerald-500/20">
+                <ScanLine className="text-black w-12 h-12" />
+              </div>
+              <h3 className="text-3xl font-black text-zinc-900 dark:text-white mb-4">Validation Center</h3>
+              <p className="text-zinc-500 dark:text-white/60 mb-10 text-lg">
+                Access the mobile-optimized scanner or enter ticket IDs manually to validate attendee entry.
+              </p>
+              <div className="flex flex-col gap-4">
+                <button 
+                  onClick={() => {
+                    onClose();
+                    // Small delay to allow dashboard to close
+                    setTimeout(() => window.dispatchEvent(new CustomEvent('open-scanner')), 100);
+                  }}
+                  className="w-full py-5 bg-emerald-500 text-black font-black rounded-2xl hover:bg-emerald-400 transition-all flex items-center justify-center gap-3 text-xl"
+                >
+                  <Camera className="w-6 h-6" />
+                  Launch Scanner
+                </button>
+                <p className="text-[10px] font-black text-zinc-400 dark:text-white/40 uppercase tracking-widest">
+                  Requires camera permissions for QR scanning
+                </p>
+              </div>
             </div>
           </div>
         )}
@@ -1252,6 +1328,8 @@ export default function App() {
   const [event, setEvent] = useState<EventDetails | null>(null);
   const [ticketTypes, setTicketTypes] = useState<TicketType[]>([]);
   const [gallery, setGallery] = useState<GalleryItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [selectedType, setSelectedType] = useState<TicketType | null>(null);
   const [successTicketId, setSuccessTicketId] = useState<string | null>(null);
   const [showAdmin, setShowAdmin] = useState(false);
@@ -1276,9 +1354,43 @@ export default function App() {
   const toggleTheme = () => setTheme(prev => prev === 'light' ? 'dark' : 'light');
 
   useEffect(() => {
-    fetch('/api/event').then(res => res.json()).then(setEvent);
-    fetch('/api/ticket-types').then(res => res.json()).then(setTicketTypes);
-    fetch('/api/gallery').then(res => res.json()).then(setGallery);
+    const handleOpenScanner = () => setShowScanner(true);
+    window.addEventListener('open-scanner', handleOpenScanner);
+    return () => window.removeEventListener('open-scanner', handleOpenScanner);
+  }, []);
+
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        setLoading(true);
+        const [eventRes, typesRes, galleryRes] = await Promise.all([
+          fetch('/api/event'),
+          fetch('/api/ticket-types'),
+          fetch('/api/gallery')
+        ]);
+
+        if (!eventRes.ok || !typesRes.ok || !galleryRes.ok) {
+          throw new Error('Failed to fetch initial data');
+        }
+
+        const [eventData, typesData, galleryData] = await Promise.all([
+          eventRes.json(),
+          typesRes.json(),
+          galleryRes.json()
+        ]);
+
+        setEvent(eventData);
+        setTicketTypes(typesData);
+        setGallery(galleryData);
+      } catch (err) {
+        console.error('Error loading data:', err);
+        setError(err instanceof Error ? err.message : 'An unknown error occurred');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadData();
   }, []);
 
   const handlePaymentSuccess = async (reference: string) => {
@@ -1302,11 +1414,36 @@ export default function App() {
     check();
   };
 
-  if (!event) return (
-    <div className="min-h-screen bg-black flex items-center justify-center">
-      <Loader2 className="w-10 h-10 text-emerald-500 animate-spin" />
-    </div>
-  );
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-white dark:bg-black flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="w-12 h-12 text-emerald-500 animate-spin mx-auto mb-4" />
+          <p className="text-zinc-500 dark:text-white/40 font-bold uppercase tracking-widest text-[10px]">Loading Experience...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !event) {
+    return (
+      <div className="min-h-screen bg-white dark:bg-black flex items-center justify-center p-4">
+        <div className="max-w-md w-full text-center">
+          <div className="w-20 h-20 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-6">
+            <AlertCircle className="text-red-500 w-10 h-10" />
+          </div>
+          <h2 className="text-2xl font-black text-zinc-900 dark:text-white mb-2">Something went wrong</h2>
+          <p className="text-zinc-500 dark:text-white/60 mb-8">{error || 'Failed to load event details'}</p>
+          <button 
+            onClick={() => window.location.reload()}
+            className="px-8 py-3 bg-zinc-900 dark:bg-white text-white dark:text-black font-bold rounded-xl hover:opacity-90 transition-all"
+          >
+            Try Again
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-white dark:bg-black text-zinc-900 dark:text-white font-sans selection:bg-emerald-500 selection:text-black transition-colors duration-300">
@@ -1325,7 +1462,7 @@ export default function App() {
         <section className="max-w-7xl mx-auto px-4 py-24">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
             <div className="lg:col-span-2">
-              <div className="mb-12">
+              <div className="mb-12 p-8 rounded-3xl bg-gradient-to-br from-zinc-50 to-white dark:from-zinc-900 dark:to-zinc-900/50 border border-zinc-200 dark:border-white/5 shadow-sm transition-colors duration-300">
                 <h2 className="text-3xl font-black text-zinc-900 dark:text-white mb-6 tracking-tight">About the Event</h2>
                 <p className="text-zinc-600 dark:text-white/60 leading-relaxed text-lg">
                   {event.description}
@@ -1406,23 +1543,24 @@ export default function App() {
             </div>
           </div>
         </section>
+        <ValidationSection onScannerClick={() => setShowScanner(true)} />
       </main>
 
-      <footer className="border-t border-white/5 bg-zinc-950 py-12">
+      <footer className="bg-zinc-50 dark:bg-zinc-950 border-t border-zinc-200 dark:border-white/5 py-12 transition-colors duration-300">
         <div className="max-w-7xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-8">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 bg-emerald-500 rounded-lg flex items-center justify-center">
               <Ticket className="text-black w-5 h-5" />
             </div>
-            <span className="font-bold text-xl tracking-tight text-white">TIX.</span>
+            <span className="font-bold text-xl tracking-tight text-zinc-900 dark:text-white">TIX.</span>
           </div>
-          <div className="text-white/30 text-xs font-medium">
+          <div className="text-zinc-400 dark:text-white/30 text-xs font-medium">
             © 2026 Comedy Show Ticketing. All rights reserved.
           </div>
-          <div className="flex gap-6 text-white/40 text-xs font-bold uppercase tracking-widest">
-            <a href="#" className="hover:text-emerald-400 transition-colors">Terms</a>
-            <a href="#" className="hover:text-emerald-400 transition-colors">Privacy</a>
-            <a href="#" className="hover:text-emerald-400 transition-colors">Refund Policy</a>
+          <div className="flex gap-6 text-zinc-400 dark:text-white/40 text-xs font-bold uppercase tracking-widest">
+            <button onClick={() => setShowScanner(true)} className="hover:text-emerald-500 transition-colors">Staff Portal</button>
+            <a href="#" className="hover:text-emerald-500 transition-colors">Terms</a>
+            <a href="#" className="hover:text-emerald-500 transition-colors">Privacy</a>
           </div>
         </div>
       </footer>

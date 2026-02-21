@@ -8,6 +8,10 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import nodemailer from "nodemailer";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 dotenv.config();
 
@@ -79,8 +83,8 @@ if (eventCount.count === 0) {
     "Get ready for the biggest comedy event of the year! Featuring top comedians from across the globe.",
     "Lagos City Hall",
     "https://picsum.photos/seed/comedy/1200/600",
-    "Basketmouth",
-    "Bright Okpocha, better known by his stage name Basketmouth, is a Nigerian comedian and actor.",
+    "MC Knight Wizz",
+    "MC Knight Wizz is a renowned entertainer and host, known for bringing high energy and unforgettable moments to every stage.",
     "https://picsum.photos/seed/host/400/400"
   );
 
@@ -106,6 +110,10 @@ if (eventCount.count === 0) {
   try { db.prepare("ALTER TABLE events ADD COLUMN host_name TEXT").run(); } catch(e) {}
   try { db.prepare("ALTER TABLE events ADD COLUMN host_description TEXT").run(); } catch(e) {}
   try { db.prepare("ALTER TABLE events ADD COLUMN host_image TEXT").run(); } catch(e) {}
+  
+  // Update existing host name if it's the default
+  db.prepare("UPDATE events SET host_name = ? WHERE host_name = 'Basketmouth' OR host_name IS NULL").run("MC Knight Wizz");
+  db.prepare("UPDATE events SET host_description = ? WHERE host_description LIKE 'Bright Okpocha%' OR host_description IS NULL").run("MC Knight Wizz is a renowned entertainer and host, known for bringing high energy and unforgettable moments to every stage.");
 }
 
 const app = express();
