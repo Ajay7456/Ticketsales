@@ -1,0 +1,5 @@
+{
+  "name": "Comedy Show 2026 Ticketing",
+  "description": "A full-stack event ticketing system with Paystack integration, QR code validation, and admin dashboard.",
+  "requestFramePermissions": ["camera"]
+}
