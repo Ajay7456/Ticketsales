@@ -1,4 +1,5 @@
 import express from "express";
+console.log("Server starting...");
 import { createServer as createViteServer } from "vite";
 import path from "path";
 import cors from "cors";
@@ -13,9 +14,18 @@ import { fileURLToPath } from "url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-dotenv.config();
+let db: Database.Database;
+try {
+  db = new Database(path.join(__dirname, "tickets.db"));
+  console.log("Database connected successfully");
+} catch (err) {
+  console.error("Failed to connect to database:", err);
+  // Fallback to memory database if file fails
+  db = new Database(":memory:");
+  console.log("Falling back to memory database");
+}
 
-const db = new Database("tickets.db");
+dotenv.config();
 
 // Initialize Database
 db.exec(`
@@ -195,6 +205,10 @@ const authenticateAdmin = (req: any, res: any, next: any) => {
 };
 
 // --- Public API Routes ---
+
+app.get("/api/health", (req, res) => {
+  res.json({ status: "ok", time: new Date().toISOString() });
+});
 
 app.get("/api/event", (req, res) => {
   const event = db.prepare("SELECT * FROM events LIMIT 1").get();

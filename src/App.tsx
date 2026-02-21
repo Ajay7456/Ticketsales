@@ -1360,7 +1360,7 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    const loadData = async () => {
+    const loadData = async (retries = 3) => {
       try {
         setLoading(true);
         const [eventRes, typesRes, galleryRes] = await Promise.all([
@@ -1370,7 +1370,14 @@ export default function App() {
         ]);
 
         if (!eventRes.ok || !typesRes.ok || !galleryRes.ok) {
-          throw new Error('Failed to fetch initial data');
+          if (retries > 0) {
+            console.log(`Fetch failed, retrying... (${retries} left)`);
+            setTimeout(() => loadData(retries - 1), 2000);
+            return;
+          }
+          if (!eventRes.ok) throw new Error(`Event API failed: ${eventRes.status}`);
+          if (!typesRes.ok) throw new Error(`Ticket Types API failed: ${typesRes.status}`);
+          if (!galleryRes.ok) throw new Error(`Gallery API failed: ${galleryRes.status}`);
         }
 
         const [eventData, typesData, galleryData] = await Promise.all([
@@ -1382,6 +1389,7 @@ export default function App() {
         setEvent(eventData);
         setTicketTypes(typesData);
         setGallery(galleryData);
+        setError(null);
       } catch (err) {
         console.error('Error loading data:', err);
         setError(err instanceof Error ? err.message : 'An unknown error occurred');
