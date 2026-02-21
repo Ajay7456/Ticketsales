@@ -424,7 +424,7 @@ const SuccessModal = ({ ticketId, onClose }: { ticketId: string, onClose: () => 
   );
 };
 
-const AdminDashboard = ({ onClose, onUpdate }: { onClose: () => void, onUpdate?: () => void }) => {
+const AdminDashboard = ({ onClose, onUpdate, theme }: { onClose: () => void, onUpdate?: () => void, theme: 'light' | 'dark' }) => {
   const [password, setPassword] = useState('');
   const [token, setToken] = useState(localStorage.getItem('admin_token') || '');
   const [stats, setStats] = useState<Stats | null>(null);
@@ -648,7 +648,7 @@ const AdminDashboard = ({ onClose, onUpdate }: { onClose: () => void, onUpdate?:
       <div className="max-w-7xl mx-auto px-4 py-8">
         <div className="flex items-center justify-between mb-12">
           <div>
-            <h1 className="text-3xl font-black text-white">Admin Dashboard</h1>
+            <h1 className="text-3xl font-black text-zinc-900 dark:text-white">Admin Dashboard</h1>
             <div className="flex gap-4 mt-4">
               {(['stats', 'tickets', 'gallery', 'settings'] as const).map(tab => (
                 <button
@@ -656,7 +656,9 @@ const AdminDashboard = ({ onClose, onUpdate }: { onClose: () => void, onUpdate?:
                   onClick={() => setActiveTab(tab)}
                   className={cn(
                     "px-4 py-2 rounded-lg text-sm font-bold uppercase tracking-widest transition-all",
-                    activeTab === tab ? "bg-emerald-500 text-black" : "bg-white/5 text-white/40 hover:bg-white/10"
+                    activeTab === tab 
+                      ? "bg-emerald-500 text-black" 
+                      : "bg-zinc-200 dark:bg-white/5 text-zinc-500 dark:text-white/40 hover:bg-zinc-300 dark:hover:bg-white/10"
                   )}
                 >
                   {tab}
@@ -667,11 +669,11 @@ const AdminDashboard = ({ onClose, onUpdate }: { onClose: () => void, onUpdate?:
           <div className="flex gap-3">
             <button 
               onClick={() => { localStorage.removeItem('admin_token'); setToken(''); }}
-              className="px-4 py-2 bg-white/5 text-white/60 rounded-lg hover:bg-white/10 text-sm font-medium"
+              className="px-4 py-2 bg-zinc-200 dark:bg-white/5 text-zinc-600 dark:text-white/60 rounded-lg hover:bg-zinc-300 dark:hover:bg-white/10 text-sm font-medium transition-colors"
             >
               Logout
             </button>
-            <button onClick={onClose} className="p-2 bg-white/5 text-white rounded-lg hover:bg-white/10">
+            <button onClick={onClose} className="p-2 bg-zinc-200 dark:bg-white/5 text-zinc-900 dark:text-white rounded-lg hover:bg-zinc-300 dark:hover:bg-white/10 transition-colors">
               <X className="w-6 h-6" />
             </button>
           </div>
@@ -680,42 +682,46 @@ const AdminDashboard = ({ onClose, onUpdate }: { onClose: () => void, onUpdate?:
         {activeTab === 'stats' && stats && (
           <>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-              <div className="bg-zinc-900 border border-white/5 p-6 rounded-2xl">
-                <div className="flex items-center gap-3 text-white/40 mb-2">
+              <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-white/5 p-6 rounded-2xl transition-colors">
+                <div className="flex items-center gap-3 text-zinc-400 dark:text-white/40 mb-2">
                   <Ticket className="w-4 h-4" />
                   <span className="text-xs font-bold uppercase tracking-widest">Tickets Sold</span>
                 </div>
-                <div className="text-4xl font-black text-white">{stats.totalSold}</div>
+                <div className="text-4xl font-black text-zinc-900 dark:text-white">{stats.totalSold}</div>
               </div>
-              <div className="bg-zinc-900 border border-white/5 p-6 rounded-2xl">
-                <div className="flex items-center gap-3 text-white/40 mb-2">
+              <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-white/5 p-6 rounded-2xl transition-colors">
+                <div className="flex items-center gap-3 text-zinc-400 dark:text-white/40 mb-2">
                   <BarChart3 className="w-4 h-4" />
                   <span className="text-xs font-bold uppercase tracking-widest">Total Revenue</span>
                 </div>
-                <div className="text-4xl font-black text-emerald-400">{formatCurrency(stats.totalRevenue)}</div>
+                <div className="text-4xl font-black text-emerald-600 dark:text-emerald-400">{formatCurrency(stats.totalRevenue)}</div>
               </div>
-              <div className="bg-zinc-900 border border-white/5 p-6 rounded-2xl">
-                <div className="flex items-center gap-3 text-white/40 mb-2">
+              <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-white/5 p-6 rounded-2xl transition-colors">
+                <div className="flex items-center gap-3 text-zinc-400 dark:text-white/40 mb-2">
                   <ScanLine className="w-4 h-4" />
                   <span className="text-xs font-bold uppercase tracking-widest">Check-ins</span>
                 </div>
-                <div className="text-4xl font-black text-white">
+                <div className="text-4xl font-black text-zinc-900 dark:text-white">
                   {tickets.filter(t => t.is_used).length}
                 </div>
               </div>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
-              <div className="bg-zinc-900 border border-white/5 p-8 rounded-3xl">
-                <h3 className="text-xl font-bold text-white mb-6">Sales by Ticket Type</h3>
+              <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-white/5 p-8 rounded-3xl transition-colors">
+                <h3 className="text-xl font-bold text-zinc-900 dark:text-white mb-6">Sales by Ticket Type</h3>
                 <div className="h-[300px]">
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart data={stats?.salesByType || []}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#27272a" />
-                      <XAxis dataKey="name" stroke="#71717a" fontSize={12} />
-                      <YAxis stroke="#71717a" fontSize={12} />
+                      <CartesianGrid strokeDasharray="3 3" stroke={theme === 'dark' ? "#27272a" : "#e5e7eb"} />
+                      <XAxis dataKey="name" stroke={theme === 'dark' ? "#71717a" : "#9ca3af"} fontSize={12} />
+                      <YAxis stroke={theme === 'dark' ? "#71717a" : "#9ca3af"} fontSize={12} />
                       <Tooltip 
-                        contentStyle={{ backgroundColor: '#18181b', border: '1px solid #27272a' }}
+                        contentStyle={{ 
+                          backgroundColor: theme === 'dark' ? '#18181b' : '#ffffff', 
+                          border: `1px solid ${theme === 'dark' ? '#27272a' : '#e5e7eb'}`,
+                          color: theme === 'dark' ? '#ffffff' : '#000000'
+                        }}
                         itemStyle={{ color: '#10b981' }}
                       />
                       <Bar dataKey="sold" fill="#10b981" radius={[4, 4, 0, 0]} />
@@ -723,8 +729,8 @@ const AdminDashboard = ({ onClose, onUpdate }: { onClose: () => void, onUpdate?:
                   </ResponsiveContainer>
                 </div>
               </div>
-              <div className="bg-zinc-900 border border-white/5 p-8 rounded-3xl">
-                <h3 className="text-xl font-bold text-white mb-6">Revenue Distribution</h3>
+              <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-white/5 p-8 rounded-3xl transition-colors">
+                <h3 className="text-xl font-bold text-zinc-900 dark:text-white mb-6">Revenue Distribution</h3>
                 <div className="h-[300px]">
                   <ResponsiveContainer width="100%" height="100%">
                     <PieChart>
@@ -742,7 +748,11 @@ const AdminDashboard = ({ onClose, onUpdate }: { onClose: () => void, onUpdate?:
                         ))}
                       </Pie>
                       <Tooltip 
-                        contentStyle={{ backgroundColor: '#18181b', border: '1px solid #27272a' }}
+                        contentStyle={{ 
+                          backgroundColor: theme === 'dark' ? '#18181b' : '#ffffff', 
+                          border: `1px solid ${theme === 'dark' ? '#27272a' : '#e5e7eb'}`,
+                          color: theme === 'dark' ? '#ffffff' : '#000000'
+                        }}
                         formatter={(value: number) => formatCurrency(value)}
                       />
                     </PieChart>
@@ -754,11 +764,11 @@ const AdminDashboard = ({ onClose, onUpdate }: { onClose: () => void, onUpdate?:
         )}
 
         {activeTab === 'tickets' && (
-          <div className="bg-zinc-900 border border-white/5 rounded-3xl overflow-hidden">
-            <div className="p-8 border-b border-white/5 flex items-center justify-between">
+          <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-white/5 rounded-3xl overflow-hidden transition-colors">
+            <div className="p-8 border-b border-zinc-200 dark:border-white/5 flex items-center justify-between">
               <div>
-                <h3 className="text-xl font-bold text-white">Attendee List</h3>
-                <div className="text-xs text-white/40 font-bold uppercase tracking-widest mt-1">
+                <h3 className="text-xl font-bold text-zinc-900 dark:text-white">Attendee List</h3>
+                <div className="text-xs text-zinc-400 dark:text-white/40 font-bold uppercase tracking-widest mt-1">
                   {tickets.length} Total Attendees
                 </div>
               </div>
@@ -773,7 +783,7 @@ const AdminDashboard = ({ onClose, onUpdate }: { onClose: () => void, onUpdate?:
             <div className="overflow-x-auto">
               <table className="w-full text-left">
                 <thead>
-                  <tr className="bg-white/5 text-[10px] font-black text-white/40 uppercase tracking-widest">
+                  <tr className="bg-zinc-50 dark:bg-white/5 text-[10px] font-black text-zinc-400 dark:text-white/40 uppercase tracking-widest">
                     <th className="px-8 py-4">Holder Name</th>
                     <th className="px-8 py-4">Ticket Type</th>
                     <th className="px-8 py-4">Status</th>
@@ -781,26 +791,26 @@ const AdminDashboard = ({ onClose, onUpdate }: { onClose: () => void, onUpdate?:
                     <th className="px-8 py-4">Ticket ID</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-white/5">
+                <tbody className="divide-y divide-zinc-100 dark:divide-white/5">
                   {tickets.map((ticket, idx) => (
-                    <tr key={ticket.id || idx} className="text-sm text-white/80 hover:bg-white/[0.02] transition-colors">
-                      <td className="px-8 py-4 font-medium text-white">{ticket.holder_name}</td>
+                    <tr key={ticket.id || idx} className="text-sm text-zinc-600 dark:text-white/80 hover:bg-zinc-50 dark:hover:bg-white/[0.02] transition-colors">
+                      <td className="px-8 py-4 font-medium text-zinc-900 dark:text-white">{ticket.holder_name}</td>
                       <td className="px-8 py-4">
-                        <span className="px-2 py-1 bg-white/5 rounded text-[10px] font-bold uppercase">
+                        <span className="px-2 py-1 bg-zinc-100 dark:bg-white/5 rounded text-[10px] font-bold uppercase text-zinc-500 dark:text-white/60">
                           {ticket.ticket_type_name}
                         </span>
                       </td>
                       <td className="px-8 py-4">
                         {ticket.is_used ? (
-                          <span className="flex items-center gap-1.5 text-emerald-400 text-xs">
+                          <span className="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400 text-xs">
                             <CheckCircle2 className="w-3 h-3" /> Scanned
                           </span>
                         ) : (
-                          <span className="text-white/30 text-xs">Pending</span>
+                          <span className="text-zinc-400 dark:text-white/30 text-xs">Pending</span>
                         )}
                       </td>
-                      <td className="px-8 py-4 text-white/40">{new Date(ticket.purchase_date).toLocaleDateString()}</td>
-                      <td className="px-8 py-4 font-mono text-xs text-white/40">{ticket.id}</td>
+                      <td className="px-8 py-4 text-zinc-400 dark:text-white/40">{new Date(ticket.purchase_date).toLocaleDateString()}</td>
+                      <td className="px-8 py-4 font-mono text-xs text-zinc-400 dark:text-white/40">{ticket.id}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -811,21 +821,21 @@ const AdminDashboard = ({ onClose, onUpdate }: { onClose: () => void, onUpdate?:
 
         {activeTab === 'gallery' && (
           <div className="space-y-8">
-            <div className="bg-zinc-900 border border-white/5 p-8 rounded-3xl">
-              <h3 className="text-xl font-bold text-white mb-6">Add New Highlight</h3>
+            <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-white/5 p-8 rounded-3xl transition-colors">
+              <h3 className="text-xl font-bold text-zinc-900 dark:text-white mb-6">Add New Highlight</h3>
               <form onSubmit={handleAddGallery} className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <label className="block text-xs font-bold text-white/40 uppercase tracking-widest">Image Source</label>
+                    <label className="block text-xs font-bold text-zinc-400 dark:text-white/40 uppercase tracking-widest">Image Source</label>
                     <div className="flex gap-2">
                       <input 
                         type="text"
                         placeholder="Image URL"
                         value={newGalleryItem.image_url}
                         onChange={e => setNewGalleryItem({...newGalleryItem, image_url: e.target.value})}
-                        className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-white text-sm"
+                        className="flex-1 bg-zinc-50 dark:bg-white/5 border border-zinc-200 dark:border-white/10 rounded-xl px-4 py-2 text-zinc-900 dark:text-white text-sm"
                       />
-                      <label className="cursor-pointer bg-white/10 hover:bg-white/20 px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 transition-colors">
+                      <label className="cursor-pointer bg-zinc-100 dark:bg-white/10 hover:bg-zinc-200 dark:hover:bg-white/20 px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 transition-colors text-zinc-700 dark:text-white">
                         <Download className="w-4 h-4" />
                         Upload
                         <input type="file" accept="image/*" className="hidden" onChange={e => handleFileUpload(e, 'gallery')} />
@@ -833,14 +843,14 @@ const AdminDashboard = ({ onClose, onUpdate }: { onClose: () => void, onUpdate?:
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <label className="block text-xs font-bold text-white/40 uppercase tracking-widest">Caption</label>
+                    <label className="block text-xs font-bold text-zinc-400 dark:text-white/40 uppercase tracking-widest">Caption</label>
                     <input 
                       required
                       type="text"
                       placeholder="Caption"
                       value={newGalleryItem.caption}
                       onChange={e => setNewGalleryItem({...newGalleryItem, caption: e.target.value})}
-                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-white text-sm"
+                      className="w-full bg-zinc-50 dark:bg-white/5 border border-zinc-200 dark:border-white/10 rounded-xl px-4 py-2 text-zinc-900 dark:text-white text-sm"
                     />
                   </div>
                 </div>
@@ -848,7 +858,7 @@ const AdminDashboard = ({ onClose, onUpdate }: { onClose: () => void, onUpdate?:
                   <select 
                     value={newGalleryItem.category}
                     onChange={e => setNewGalleryItem({...newGalleryItem, category: e.target.value as any})}
-                    className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-white text-sm"
+                    className="flex-1 bg-zinc-50 dark:bg-white/5 border border-zinc-200 dark:border-white/10 rounded-xl px-4 py-2 text-zinc-900 dark:text-white text-sm"
                   >
                     <option value="guest">Guest of Honor</option>
                     <option value="performance">Performance</option>
@@ -859,7 +869,7 @@ const AdminDashboard = ({ onClose, onUpdate }: { onClose: () => void, onUpdate?:
                   </button>
                 </div>
                 {newGalleryItem.image_url && (
-                  <div className="mt-4 aspect-video w-32 rounded-lg overflow-hidden border border-white/10">
+                  <div className="mt-4 aspect-video w-32 rounded-lg overflow-hidden border border-zinc-200 dark:border-white/10">
                     <img src={newGalleryItem.image_url} className="w-full h-full object-cover" />
                   </div>
                 )}
@@ -868,7 +878,7 @@ const AdminDashboard = ({ onClose, onUpdate }: { onClose: () => void, onUpdate?:
 
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
               {gallery.map(item => (
-                <div key={item.id} className="bg-zinc-900 border border-white/5 rounded-2xl overflow-hidden group">
+                <div key={item.id} className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-white/5 rounded-2xl overflow-hidden group transition-colors">
                   <div className="aspect-square relative">
                     <img src={item.image_url} alt={item.caption} className="w-full h-full object-cover" />
                     <button 
@@ -879,8 +889,8 @@ const AdminDashboard = ({ onClose, onUpdate }: { onClose: () => void, onUpdate?:
                     </button>
                   </div>
                   <div className="p-4">
-                    <div className="text-[10px] font-bold text-emerald-400 uppercase tracking-widest mb-1">{item.category}</div>
-                    <div className="text-sm text-white font-medium">{item.caption}</div>
+                    <div className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-widest mb-1">{item.category}</div>
+                    <div className="text-sm text-zinc-900 dark:text-white font-medium">{item.caption}</div>
                   </div>
                 </div>
               ))}
@@ -890,29 +900,29 @@ const AdminDashboard = ({ onClose, onUpdate }: { onClose: () => void, onUpdate?:
 
         {activeTab === 'settings' && event && (
           <div className="space-y-8">
-            <div className="bg-zinc-900 border border-white/5 p-8 rounded-3xl">
-              <h3 className="text-xl font-bold text-white mb-6">Event Settings</h3>
+            <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-white/5 p-8 rounded-3xl transition-colors">
+              <h3 className="text-xl font-bold text-zinc-900 dark:text-white mb-6">Event Settings</h3>
               <form onSubmit={handleUpdateEvent} className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
-                    <label className="block text-xs font-bold text-white/40 uppercase tracking-widest">Event Title</label>
+                    <label className="block text-xs font-bold text-zinc-400 dark:text-white/40 uppercase tracking-widest">Event Title</label>
                     <input 
                       type="text"
                       value={event.title}
                       onChange={e => setEvent({...event, title: e.target.value})}
-                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-white"
+                      className="w-full bg-zinc-50 dark:bg-white/5 border border-zinc-200 dark:border-white/10 rounded-xl px-4 py-2 text-zinc-900 dark:text-white"
                     />
                   </div>
                   <div className="space-y-2">
-                    <label className="block text-xs font-bold text-white/40 uppercase tracking-widest">Hero Image</label>
+                    <label className="block text-xs font-bold text-zinc-400 dark:text-white/40 uppercase tracking-widest">Hero Image</label>
                     <div className="flex gap-2">
                       <input 
                         type="text"
                         value={event.hero_image}
                         onChange={e => setEvent({...event, hero_image: e.target.value})}
-                        className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-white text-sm"
+                        className="flex-1 bg-zinc-50 dark:bg-white/5 border border-zinc-200 dark:border-white/10 rounded-xl px-4 py-2 text-zinc-900 dark:text-white text-sm"
                       />
-                      <label className="cursor-pointer bg-white/10 hover:bg-white/20 px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 transition-colors">
+                      <label className="cursor-pointer bg-zinc-100 dark:bg-white/10 hover:bg-zinc-200 dark:hover:bg-white/20 px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 transition-colors text-zinc-700 dark:text-white">
                         <Download className="w-4 h-4" />
                         Upload
                         <input type="file" accept="image/*" className="hidden" onChange={e => handleFileUpload(e, 'hero')} />
@@ -921,66 +931,66 @@ const AdminDashboard = ({ onClose, onUpdate }: { onClose: () => void, onUpdate?:
                   </div>
                   {event.hero_image && (
                     <div className="md:col-span-2 space-y-2">
-                      <label className="block text-xs font-bold text-white/40 uppercase tracking-widest">Hero Preview</label>
-                      <div className="aspect-[21/9] w-full rounded-2xl overflow-hidden border border-white/10">
+                      <label className="block text-xs font-bold text-zinc-400 dark:text-white/40 uppercase tracking-widest">Hero Preview</label>
+                      <div className="aspect-[21/9] w-full rounded-2xl overflow-hidden border border-zinc-200 dark:border-white/10">
                         <img src={event.hero_image} className="w-full h-full object-cover" alt="Hero Preview" />
                       </div>
                     </div>
                   )}
                   <div className="space-y-2">
-                    <label className="block text-xs font-bold text-white/40 uppercase tracking-widest">Event Date & Time</label>
+                    <label className="block text-xs font-bold text-zinc-400 dark:text-white/40 uppercase tracking-widest">Event Date & Time</label>
                     <input 
                       type="datetime-local"
                       value={event.date.slice(0, 16)}
                       onChange={e => setEvent({...event, date: e.target.value})}
-                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-white"
+                      className="w-full bg-zinc-50 dark:bg-white/5 border border-zinc-200 dark:border-white/10 rounded-xl px-4 py-2 text-zinc-900 dark:text-white"
                     />
                   </div>
                   <div className="space-y-2 md:col-span-2">
-                    <label className="block text-xs font-bold text-white/40 uppercase tracking-widest">Event Description</label>
+                    <label className="block text-xs font-bold text-zinc-400 dark:text-white/40 uppercase tracking-widest">Event Description</label>
                     <textarea 
                       value={event.description}
                       onChange={e => setEvent({...event, description: e.target.value})}
-                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-white h-32 resize-none"
+                      className="w-full bg-zinc-50 dark:bg-white/5 border border-zinc-200 dark:border-white/10 rounded-xl px-4 py-2 text-zinc-900 dark:text-white h-32 resize-none"
                       placeholder="Describe your event..."
                     />
                   </div>
                   <div className="space-y-2 md:col-span-2">
-                    <label className="block text-xs font-bold text-white/40 uppercase tracking-widest">Venue Address</label>
+                    <label className="block text-xs font-bold text-zinc-400 dark:text-white/40 uppercase tracking-widest">Venue Address</label>
                     <input 
                       type="text"
                       value={event.venue}
                       onChange={e => setEvent({...event, venue: e.target.value})}
-                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-white"
+                      className="w-full bg-zinc-50 dark:bg-white/5 border border-zinc-200 dark:border-white/10 rounded-xl px-4 py-2 text-zinc-900 dark:text-white"
                       placeholder="Enter full address for map navigation"
                     />
                   </div>
                 </div>
 
-                <div className="pt-8 border-t border-white/5">
-                  <h4 className="text-lg font-bold text-white mb-6">Host Information</h4>
+                <div className="pt-8 border-t border-zinc-200 dark:border-white/5">
+                  <h4 className="text-lg font-bold text-zinc-900 dark:text-white mb-6">Host Information</h4>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-2">
-                      <label className="block text-xs font-bold text-white/40 uppercase tracking-widest">Host Name</label>
+                      <label className="block text-xs font-bold text-zinc-400 dark:text-white/40 uppercase tracking-widest">Host Name</label>
                       <input 
                         type="text"
                         value={event.host_name || ''}
                         onChange={e => setEvent({...event, host_name: e.target.value})}
-                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-white"
+                        className="w-full bg-zinc-50 dark:bg-white/5 border border-zinc-200 dark:border-white/10 rounded-xl px-4 py-2 text-zinc-900 dark:text-white"
                         placeholder="Host Name"
                       />
                     </div>
                     <div className="space-y-2">
-                      <label className="block text-xs font-bold text-white/40 uppercase tracking-widest">Host Image</label>
+                      <label className="block text-xs font-bold text-zinc-400 dark:text-white/40 uppercase tracking-widest">Host Image</label>
                       <div className="flex gap-2">
                         <input 
                           type="text"
                           value={event.host_image || ''}
                           onChange={e => setEvent({...event, host_image: e.target.value})}
-                          className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-white text-sm"
+                          className="flex-1 bg-zinc-50 dark:bg-white/5 border border-zinc-200 dark:border-white/10 rounded-xl px-4 py-2 text-zinc-900 dark:text-white text-sm"
                           placeholder="Host Image URL"
                         />
-                        <label className="cursor-pointer bg-white/10 hover:bg-white/20 px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 transition-colors">
+                        <label className="cursor-pointer bg-zinc-100 dark:bg-white/10 hover:bg-zinc-200 dark:hover:bg-white/20 px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 transition-colors text-zinc-700 dark:text-white">
                           <Download className="w-4 h-4" />
                           Upload
                           <input type="file" accept="image/*" className="hidden" onChange={e => handleFileUpload(e, 'host')} />
@@ -988,18 +998,18 @@ const AdminDashboard = ({ onClose, onUpdate }: { onClose: () => void, onUpdate?:
                       </div>
                     </div>
                     <div className="space-y-2 md:col-span-2">
-                      <label className="block text-xs font-bold text-white/40 uppercase tracking-widest">Host Description</label>
+                      <label className="block text-xs font-bold text-zinc-400 dark:text-white/40 uppercase tracking-widest">Host Description</label>
                       <textarea 
                         value={event.host_description || ''}
                         onChange={e => setEvent({...event, host_description: e.target.value})}
-                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-white h-24 resize-none"
+                        className="w-full bg-zinc-50 dark:bg-white/5 border border-zinc-200 dark:border-white/10 rounded-xl px-4 py-2 text-zinc-900 dark:text-white h-24 resize-none"
                         placeholder="Brief bio of the host..."
                       />
                     </div>
                     {event.host_image && (
                       <div className="space-y-2">
-                        <label className="block text-xs font-bold text-white/40 uppercase tracking-widest">Host Preview</label>
-                        <div className="w-24 h-24 rounded-full overflow-hidden border border-white/10">
+                        <label className="block text-xs font-bold text-zinc-400 dark:text-white/40 uppercase tracking-widest">Host Preview</label>
+                        <div className="w-24 h-24 rounded-full overflow-hidden border border-zinc-200 dark:border-white/10">
                           <img src={event.host_image} className="w-full h-full object-cover" alt="Host Preview" />
                         </div>
                       </div>
@@ -1013,15 +1023,15 @@ const AdminDashboard = ({ onClose, onUpdate }: { onClose: () => void, onUpdate?:
               </form>
             </div>
 
-            <div className="bg-zinc-900 border border-white/5 p-8 rounded-3xl">
-              <h3 className="text-xl font-bold text-white mb-6">Ticket Pricing</h3>
+            <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-white/5 p-8 rounded-3xl transition-colors">
+              <h3 className="text-xl font-bold text-zinc-900 dark:text-white mb-6">Ticket Pricing</h3>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {ticketTypes.map(type => (
-                  <div key={type.id} className="bg-white/5 border border-white/10 p-6 rounded-2xl">
-                    <h4 className="font-bold text-white mb-4">{type.name}</h4>
+                  <div key={type.id} className="bg-zinc-50 dark:bg-white/5 border border-zinc-200 dark:border-white/10 p-6 rounded-2xl">
+                    <h4 className="font-bold text-zinc-900 dark:text-white mb-4">{type.name}</h4>
                     <div className="space-y-4">
                       <div>
-                        <label className="block text-[10px] font-bold text-white/40 uppercase tracking-widest mb-1">Price (NGN)</label>
+                        <label className="block text-[10px] font-bold text-zinc-400 dark:text-white/40 uppercase tracking-widest mb-1">Price (NGN)</label>
                         <input 
                           type="number"
                           value={type.price}
@@ -1029,12 +1039,12 @@ const AdminDashboard = ({ onClose, onUpdate }: { onClose: () => void, onUpdate?:
                             const newTypes = ticketTypes.map(t => t.id === type.id ? {...t, price: Number(e.target.value)} : t);
                             setTicketTypes(newTypes);
                           }}
-                          className="w-full bg-black/40 border border-white/10 rounded-lg px-3 py-2 text-white"
+                          className="w-full bg-white dark:bg-black/40 border border-zinc-200 dark:border-white/10 rounded-lg px-3 py-2 text-zinc-900 dark:text-white"
                         />
                       </div>
                       <button 
                         onClick={() => handleUpdateTicketType(type)}
-                        className="w-full bg-white/10 text-white text-xs font-bold py-2 rounded-lg hover:bg-white/20"
+                        className="w-full bg-zinc-200 dark:bg-white/10 text-zinc-900 dark:text-white text-xs font-bold py-2 rounded-lg hover:bg-zinc-300 dark:hover:bg-white/20 transition-colors"
                       >
                         Update Price
                       </button>
@@ -1448,6 +1458,7 @@ export default function App() {
               fetch('/api/ticket-types').then(res => res.json()).then(setTicketTypes);
               fetch('/api/gallery').then(res => res.json()).then(setGallery);
             }}
+            theme={theme}
           />
         )}
         {showScanner && (
